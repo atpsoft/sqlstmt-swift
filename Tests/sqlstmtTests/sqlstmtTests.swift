@@ -6,7 +6,7 @@ final class sqlstmtTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(sqlstmt().text, "Hello, World!")
+        XCTAssertEqual(SqlStmt().build(), "Hello, World!")
     }
 
 

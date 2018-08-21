@@ -1,3 +1,5 @@
-struct sqlstmt {
-    var text = "Hello, World!"
+struct SqlStmt {
+  func build() -> String {
+    return "Hello, World!"
+  }
 }
