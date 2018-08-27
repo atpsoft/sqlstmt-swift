@@ -80,12 +80,7 @@ class SqlStmt {
     }
 
     let tbl_name = parts[0]
-
-    // see if there is a way to use let here as well, but have it visible outside the if scope
-    var tbl_alias = tbl_name
-    if parts.count == 2 {
-      tbl_alias = parts[1]
-    }
+    let tbl_alias = (parts.count == 2) ? parts[1] : tbl_name
     return SqlTable(str: ref, name: String(tbl_name), alias: String(tbl_alias), index: use_index)
   }
 
