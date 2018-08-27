@@ -1,4 +1,9 @@
-struct SqlStmt {
+// it appears to use the method chaining syntax we want
+// we must use class instead of struct because class is a reference type
+// and so can make changes, while still returning self without the mutating keyword
+// when it was a struct and we tried to chain, we go this error:
+// "cannot use mutating member on immutable value: function call returns immutable value"
+class SqlStmt {
   enum StmtError: Error {
     case runtimeError(String)
   }
@@ -49,12 +54,12 @@ struct SqlStmt {
     return combine_parts(parts)
   }
 
-  @discardableResult mutating func select() -> SqlStmt {
+  @discardableResult func select() -> SqlStmt {
     stmt_type = .select
     return self
   }
 
-  @discardableResult mutating func table(_ ref: String, use_index: String = "") -> SqlStmt {
+  @discardableResult func table(_ ref: String, use_index: String = "") -> SqlStmt {
     let new_table = include_table(ref: ref, use_index: use_index)
     tables.append(new_table)
     return self
@@ -64,7 +69,7 @@ struct SqlStmt {
   // sort of awkward as it is, because it mutates and returns a value
   // look at the uses cases where it calls to see why
   // but it needs to be improved
-  private mutating func include_table(ref: String, use_index: String = "") -> SqlTable {
+  private func include_table(ref: String, use_index: String = "") -> SqlTable {
     var parts = ref.split(separator: " ")
     if parts.count == 3 {
       parts.remove(at: 1)
@@ -84,12 +89,12 @@ struct SqlStmt {
     return SqlTable(str: ref, name: String(tbl_name), alias: String(tbl_alias), index: use_index)
   }
 
-  @discardableResult mutating func get(_ key: String) -> SqlStmt {
+  @discardableResult func get(_ key: String) -> SqlStmt {
     gets.append(key)
     return self
   }
 
-  @discardableResult mutating func no_where() -> SqlStmt {
+  @discardableResult func no_where() -> SqlStmt {
     return self
   }
 }
