@@ -48,7 +48,7 @@ class SqlStmt {
     }
     var parts: [String] = []
     parts.append(stmt_type!.rawValue.uppercased())
-    parts.append(gets.joined(separator: ""))
+    parts.append(gets.joined(separator: ","))
     parts.append("FROM")
     parts.append(build_table_list())
     return combine_parts(parts)
