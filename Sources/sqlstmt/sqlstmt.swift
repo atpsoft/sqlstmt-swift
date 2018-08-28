@@ -6,15 +6,35 @@
 class SqlStmt {
   var data: SqlData = SqlData()
 
-  func to_s() throws -> String {
-    let builder = MysqlBuilder(data)
-    return try builder.build()
+  ////// pick statement type
+
+  @discardableResult func select() throws -> SqlStmt {
+    return try type(.select)
   }
 
-  @discardableResult func select() -> SqlStmt {
-    data.stmt_type = .select
+  @discardableResult func update() throws -> SqlStmt {
+    return try type(.update)
+  }
+
+  @discardableResult func insert() throws -> SqlStmt {
+    return try type(.insert)
+  }
+
+  @discardableResult func delete(_ tables: String...) throws -> SqlStmt {
+    try type(.delete)
+    data.tables_to_delete = tables
     return self
   }
+
+  @discardableResult func type(_ stmt_type: StmtType) throws -> SqlStmt {
+    if data.stmt_type != nil {
+      throw StmtError.runtimeError("statement type already set to \(data.stmt_type!)")
+    }
+    data.stmt_type = stmt_type
+    return self
+  }
+
+  ////// other
 
   @discardableResult func get(_ key: String) -> SqlStmt {
     data.gets.append(key)
@@ -47,6 +67,11 @@ class SqlStmt {
     let join = SqlJoin(kwstr: kwstr, table: tbl, on_expr: "ON \(onstr)")
     data.joins.append(join)
     return self
+  }
+
+  func to_s() throws -> String {
+    let builder = MysqlBuilder(data)
+    return try builder.build()
   }
 
   // this is used for method calls to :table and :any_join

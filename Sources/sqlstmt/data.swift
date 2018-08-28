@@ -22,6 +22,7 @@ struct SqlData {
   var table_ids: Set<String> = []
   var gets: [String] = []
   var joins: [SqlJoin] = []
+  var tables_to_delete: [String] = []
 
   init() {
     self.stmt_type = nil
