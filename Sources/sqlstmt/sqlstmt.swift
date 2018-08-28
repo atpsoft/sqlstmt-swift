@@ -4,67 +4,11 @@
 // when it was a struct and we tried to chain, we go this error:
 // "cannot use mutating member on immutable value: function call returns immutable value"
 class SqlStmt {
-  enum StmtError: Error {
-    case runtimeError(String)
-  }
-  enum StmtType: String { case select, update, insert, delete }
-
-  struct SqlTable {
-    var str: String = ""
-    var name: String = ""
-    var alias: String = ""
-    var index: String = ""
-  }
-
-  struct SqlJoin {
-    var kwstr: String = ""
-    var table: SqlTable = SqlTable()
-    var on_expr: String = ""
-  }
-
-  struct SqlData {
-    var stmt_type: StmtType?
-    var tables: [SqlTable] = []
-    var table_ids: Set<String> = []
-    var gets: [String] = []
-    var joins: [SqlJoin] = []
-
-    init() {
-      self.stmt_type = nil
-    }
-  }
-
-
   var data: SqlData = SqlData()
 
-  func combine_parts(_ parts: [String]) -> String {
-    let useful_parts = parts.filter { !$0.isEmpty }
-    return useful_parts.joined(separator: " ")
-  }
-
-  func table_to_str(_ table: SqlTable) -> String {
-    if !table.index.isEmpty {
-      return "\(table.str) USE INDEX (\(table.index))"
-    }
-    return table.str
-  }
-
-  func build_table_list() -> String {
-    let table_refs = data.tables.map { table in table_to_str(table) }
-    return table_refs.joined(separator: ",")
-  }
-
   func to_s() throws -> String {
-    if data.stmt_type == nil {
-      throw StmtError.runtimeError("must pick a statement type")
-    }
-    var parts: [String] = []
-    parts.append(data.stmt_type!.rawValue.uppercased())
-    parts.append(data.gets.joined(separator: ","))
-    parts.append("FROM")
-    parts.append(build_table_list())
-    parts.append(build_join_clause())
-    return combine_parts(parts)
+    let builder = MysqlBuilder(data)
+    return try builder.build()
   }
 
   @discardableResult func select() -> SqlStmt {
