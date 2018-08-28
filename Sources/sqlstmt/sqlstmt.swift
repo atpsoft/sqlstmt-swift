@@ -49,7 +49,6 @@ class SqlStmt {
     return self
   }
 
-
   // this is used for method calls to :table and :any_join
   // sort of awkward as it is, because it mutates and returns a value
   // look at the uses cases where it calls to see why
@@ -68,15 +67,4 @@ class SqlStmt {
     let tbl_alias = (parts.count == 2) ? parts[1] : tbl_name
     return SqlTable(str: ref, name: String(tbl_name), alias: String(tbl_alias), index: use_index)
   }
-
-  /////////////////// building stuff that will be moved elsewhere
-  func join_to_str(_ join: SqlJoin) -> String {
-    return [join.kwstr, join.table.str, join.on_expr].joined(separator: " ")
-  }
-
-  func build_join_clause() -> String {
-    let join_strs = data.joins.map {join in join_to_str(join)}
-    return join_strs.joined(separator: " ")
-  }
-
 }
