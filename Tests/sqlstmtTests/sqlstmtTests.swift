@@ -3,9 +3,13 @@ import XCTest
 
 final class sqlstmtTests: XCTestCase {
   func testSelect() throws {
-    let sqlt = SqlStmt()
+    var sqlt = SqlStmt()
     XCTAssertThrowsError(try sqlt.to_s())
 
+    sqlt.table("source")
+    XCTAssertEqual(["source"], sqlt.data.table_ids)
+
+    sqlt = SqlStmt()
     sqlt.select().table("source s").get("blah")
     XCTAssertEqual(["source", "s"], sqlt.data.table_ids)
     XCTAssertEqual("SELECT blah FROM source s", try sqlt.to_s())
