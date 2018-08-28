@@ -1,5 +1,5 @@
 class MysqlBuilder {
-  var data: SqlData
+  let data: SqlData
 
   init(_ data: SqlData) {
     self.data = data
