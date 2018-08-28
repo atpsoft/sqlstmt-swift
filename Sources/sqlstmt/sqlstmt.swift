@@ -16,11 +16,18 @@ class SqlStmt {
     var index: String = ""
   }
 
+  struct SqlJoin {
+    var kwstr: String = ""
+    var table: SqlTable = SqlTable()
+    var on_expr: String = ""
+  }
+
   struct SqlData {
     var stmt_type: StmtType?
     var tables: [SqlTable] = []
     var table_ids: Set<String> = []
     var gets: [String] = []
+    var joins: [SqlJoin] = []
 
     init() {
       self.stmt_type = nil
@@ -55,6 +62,7 @@ class SqlStmt {
     parts.append(data.gets.joined(separator: ","))
     parts.append("FROM")
     parts.append(build_table_list())
+    parts.append(build_join_clause())
     return combine_parts(parts)
   }
 
@@ -80,6 +88,23 @@ class SqlStmt {
     return self
   }
 
+  @discardableResult func join(_ table: String, _ exprs: String...) -> SqlStmt {
+    return any_join("JOIN", table, exprs)
+  }
+
+  @discardableResult func left_join(_ table: String, _ exprs: String...) -> SqlStmt {
+    return any_join("LEFT JOIN", table, exprs)
+  }
+
+  @discardableResult func any_join(_ kwstr: String, _ ref: String, _ exprs: [String]) -> SqlStmt {
+    let tbl = include_table(ref: ref)
+    let onstr = exprs.joined(separator: " AND ")
+    let join = SqlJoin(kwstr: kwstr, table: tbl, on_expr: "ON \(onstr)")
+    data.joins.append(join)
+    return self
+  }
+
+
   // this is used for method calls to :table and :any_join
   // sort of awkward as it is, because it mutates and returns a value
   // look at the uses cases where it calls to see why
@@ -98,4 +123,15 @@ class SqlStmt {
     let tbl_alias = (parts.count == 2) ? parts[1] : tbl_name
     return SqlTable(str: ref, name: String(tbl_name), alias: String(tbl_alias), index: use_index)
   }
+
+  /////////////////// building stuff that will be moved elsewhere
+  func join_to_str(_ join: SqlJoin) -> String {
+    return [join.kwstr, join.table.str, join.on_expr].joined(separator: " ")
+  }
+
+  func build_join_clause() -> String {
+    let join_strs = data.joins.map {join in join_to_str(join)}
+    return join_strs.joined(separator: " ")
+  }
+
 }

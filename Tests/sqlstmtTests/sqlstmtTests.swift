@@ -6,9 +6,12 @@ final class sqlstmtTests: XCTestCase {
     let sqlt = SqlStmt()
     XCTAssertThrowsError(try sqlt.to_s())
 
-    sqlt.select().table("source").get("blah")
-    XCTAssertEqual(["source"], sqlt.data.table_ids)
-    XCTAssertEqual("SELECT blah FROM source", try sqlt.to_s())
+    sqlt.select().table("source s").get("blah")
+    XCTAssertEqual(["source", "s"], sqlt.data.table_ids)
+    XCTAssertEqual("SELECT blah FROM source s", try sqlt.to_s())
+
+    sqlt.join("other o", "s.blah_id = o.blah_id")
+    XCTAssertEqual("SELECT blah FROM source s JOIN other o ON s.blah_id = o.blah_id", try sqlt.to_s())
   }
 
   static var allTests = [
