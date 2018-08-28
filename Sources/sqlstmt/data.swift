@@ -1,6 +1,3 @@
-enum StmtError: Error {
-  case runtimeError(String)
-}
 enum StmtType: String { case select, update, insert, delete }
 
 struct SqlTable {

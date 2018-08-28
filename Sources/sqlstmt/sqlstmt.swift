@@ -34,17 +34,6 @@ class SqlStmt {
     return self
   }
 
-  ////// other
-
-  @discardableResult func get(_ key: String) -> SqlStmt {
-    data.gets.append(key)
-    return self
-  }
-
-  @discardableResult func no_where() -> SqlStmt {
-    return self
-  }
-
   ////// tables & joins
 
   @discardableResult func table(_ ref: String, use_index: String = "") -> SqlStmt {
@@ -68,6 +57,23 @@ class SqlStmt {
     data.joins.append(join)
     return self
   }
+
+  ////// where
+
+  @discardableResult func no_where() -> SqlStmt {
+    return self
+  }
+
+  ////// fields & values
+
+  ////// simple ones that could be generated (they are in ruby)
+
+  @discardableResult func get(_ key: String) -> SqlStmt {
+    data.gets.append(key)
+    return self
+  }
+
+  /////// convert it to a string
 
   func to_s() throws -> String {
     let builder = MysqlBuilder(data)
