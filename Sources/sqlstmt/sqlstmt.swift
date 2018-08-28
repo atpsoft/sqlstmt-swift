@@ -16,15 +16,19 @@ class SqlStmt {
     var index: String = ""
   }
 
+  struct SqlData {
+    var stmt_type: StmtType?
+    var tables: [SqlTable] = []
+    var table_ids: Set<String> = []
+    var gets: [String] = []
 
-  var stmt_type: StmtType?
-  var tables: [SqlTable] = []
-  var table_ids: Set<String> = []
-  var gets: [String] = []
-
-  init() {
-    stmt_type = nil
+    init() {
+      self.stmt_type = nil
+    }
   }
+
+
+  var data: SqlData = SqlData()
 
   func combine_parts(_ parts: [String]) -> String {
     return parts.joined(separator: " ")
@@ -38,30 +42,30 @@ class SqlStmt {
   }
 
   func build_table_list() -> String {
-    let table_refs = tables.map { table in table_to_str(table) }
+    let table_refs = data.tables.map { table in table_to_str(table) }
     return table_refs.joined(separator: ",")
   }
 
   func to_s() throws -> String {
-    if stmt_type == nil {
+    if data.stmt_type == nil {
       throw StmtError.runtimeError("must pick a statement type")
     }
     var parts: [String] = []
-    parts.append(stmt_type!.rawValue.uppercased())
-    parts.append(gets.joined(separator: ","))
+    parts.append(data.stmt_type!.rawValue.uppercased())
+    parts.append(data.gets.joined(separator: ","))
     parts.append("FROM")
     parts.append(build_table_list())
     return combine_parts(parts)
   }
 
   @discardableResult func select() -> SqlStmt {
-    stmt_type = .select
+    data.stmt_type = .select
     return self
   }
 
   @discardableResult func table(_ ref: String, use_index: String = "") -> SqlStmt {
     let new_table = include_table(ref: ref, use_index: use_index)
-    tables.append(new_table)
+    data.tables.append(new_table)
     return self
   }
 
@@ -76,7 +80,7 @@ class SqlStmt {
     }
     // table_ids = table_ids.union(parts)
     for str in parts {
-      table_ids.insert(String(str))
+      data.table_ids.insert(String(str))
     }
 
     let tbl_name = parts[0]
@@ -85,7 +89,7 @@ class SqlStmt {
   }
 
   @discardableResult func get(_ key: String) -> SqlStmt {
-    gets.append(key)
+    data.gets.append(key)
     return self
   }
 
