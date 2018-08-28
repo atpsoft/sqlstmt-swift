@@ -38,7 +38,8 @@ class SqlStmt {
   var data: SqlData = SqlData()
 
   func combine_parts(_ parts: [String]) -> String {
-    return parts.joined(separator: " ")
+    let useful_parts = parts.filter { !$0.isEmpty }
+    return useful_parts.joined(separator: " ")
   }
 
   func table_to_str(_ table: SqlTable) -> String {
