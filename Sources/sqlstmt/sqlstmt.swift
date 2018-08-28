@@ -63,6 +63,17 @@ class SqlStmt {
     return self
   }
 
+  @discardableResult func get(_ key: String) -> SqlStmt {
+    data.gets.append(key)
+    return self
+  }
+
+  @discardableResult func no_where() -> SqlStmt {
+    return self
+  }
+
+  ////// tables & joins
+
   @discardableResult func table(_ ref: String, use_index: String = "") -> SqlStmt {
     let new_table = include_table(ref: ref, use_index: use_index)
     data.tables.append(new_table)
@@ -86,14 +97,5 @@ class SqlStmt {
     let tbl_name = parts[0]
     let tbl_alias = (parts.count == 2) ? parts[1] : tbl_name
     return SqlTable(str: ref, name: String(tbl_name), alias: String(tbl_alias), index: use_index)
-  }
-
-  @discardableResult func get(_ key: String) -> SqlStmt {
-    data.gets.append(key)
-    return self
-  }
-
-  @discardableResult func no_where() -> SqlStmt {
-    return self
   }
 }
