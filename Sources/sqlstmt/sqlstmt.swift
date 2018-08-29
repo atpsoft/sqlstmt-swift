@@ -75,7 +75,7 @@ class SqlStmt {
   // an empty string can be passed in for the field, in which case it won"t be added
   // this is only for the special case of INSERT INTO table SELECT b.* FROM blah b WHERE ...
   // where there are no specific fields listed
-  func set(_ field: String, _ value: String) throws -> SqlStmt {
+  func set(_ field: String, _ value: SafelySql) throws -> SqlStmt {
     if data.set_fields.contains(field) {
       throw StmtError.runtimeError("trying to set field \(field) again")
     }
@@ -83,16 +83,15 @@ class SqlStmt {
     if !field.isEmpty {
       data.set_fields.append(field)
     }
-    // TODO: need to implement to_sql stuff first
-    // value = value.is_a?(String) ? value : value.to_sql
-    data.set_values.append(value)
+    // TODO: seems like there should be a better way to do this, but it seems to work, so it's good enough for now
+    let str = (value is String) ? value as! String : value.toSql()
+    data.set_values.append(str)
     return self
   }
 
-  // TODO: need to implement to_sql stuff first
-  // func setq(field, value) -> SqlStmt {
-  //   return set(field, value.to_sql)
-  // }
+  func setq(_ field: String, _ value: SafelySql) throws -> SqlStmt {
+    return try set(field, value.toSql())
+  }
 
   /////// convert it to a string
   func to_s() throws -> String {
