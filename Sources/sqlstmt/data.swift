@@ -1,4 +1,5 @@
 enum StmtType: String { case select, update, insert, delete }
+enum WhereBehavior { case require, exclude, optional }
 
 struct SqlTable {
   var str: String = ""
@@ -20,6 +21,9 @@ struct SqlData {
   var table_ids: Set<String> = []
   var joins: [SqlJoin] = []
   var tables_to_delete: [String] = []
+  var where_behavior: WhereBehavior = .require
+  var set_fields: [String] = []
+  var set_values: [String] = []
 
   // simple flag keywords
   var distinct: Bool = false

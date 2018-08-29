@@ -61,10 +61,38 @@ class SqlStmt {
   ////// where
 
   @discardableResult func no_where() -> SqlStmt {
+    data.where_behavior = .exclude
+    return self
+  }
+
+  @discardableResult func optional_where() -> SqlStmt {
+    data.where_behavior = .optional
     return self
   }
 
   ////// fields & values
+
+  // an empty string can be passed in for the field, in which case it won"t be added
+  // this is only for the special case of INSERT INTO table SELECT b.* FROM blah b WHERE ...
+  // where there are no specific fields listed
+  func set(_ field: String, _ value: String) throws -> SqlStmt {
+    if data.set_fields.contains(field) {
+      throw StmtError.runtimeError("trying to set field \(field) again")
+    }
+
+    if !field.isEmpty {
+      data.set_fields.append(field)
+    }
+    // TODO: need to implement to_sql stuff first
+    // value = value.is_a?(String) ? value : value.to_sql
+    data.set_values.append(value)
+    return self
+  }
+
+  // TODO: need to implement to_sql stuff first
+  // func setq(field, value) -> SqlStmt {
+  //   return set(field, value.to_sql)
+  // }
 
   /////// convert it to a string
   func to_s() throws -> String {
