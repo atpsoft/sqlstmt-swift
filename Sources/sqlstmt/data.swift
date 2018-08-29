@@ -13,13 +13,33 @@ struct SqlJoin {
   var on_expr: String = ""
 }
 
+
 struct SqlData {
   var stmt_type: StmtType?
   var tables: [SqlTable] = []
   var table_ids: Set<String> = []
-  var gets: [String] = []
   var joins: [SqlJoin] = []
   var tables_to_delete: [String] = []
+
+  // simple flag keywords
+  var distinct: Bool = false
+  var ignore: Bool = false
+  var replace: Bool = false
+  var straight_join: Bool = false
+  var with_rollup: Bool = false
+
+  // simple single value keywords
+  var group_by: String = ""
+  var into: String = ""
+  var limit: String = ""
+  var offset: String = ""
+  var order_by: String = ""
+  var outfile: String = ""
+
+  // simple multi value keywords
+  var gets: [String] = []
+  var havings: [String] = []
+  var wheres: [String] = []
 
   init() {
     self.stmt_type = nil

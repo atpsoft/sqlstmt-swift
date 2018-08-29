@@ -66,15 +66,7 @@ class SqlStmt {
 
   ////// fields & values
 
-  ////// simple ones that could be generated (they are in ruby)
-
-  @discardableResult func get(_ key: String) -> SqlStmt {
-    data.gets.append(key)
-    return self
-  }
-
   /////// convert it to a string
-
   func to_s() throws -> String {
     let builder = MysqlBuilder(data)
     return try builder.build()
@@ -98,4 +90,28 @@ class SqlStmt {
     let tbl_alias = (parts.count == 2) ? parts[1] : tbl_name
     return SqlTable(str: ref, name: String(tbl_name), alias: String(tbl_alias), index: use_index)
   }
+
+  //////////// remaining methods are simple ones that could/should be generated instead of just duplicated (they are in the ruby version)
+  //////////// they are generated in the sqlstmt ruby gem, but I don't know a good way yet to do it in Swift
+
+  ////// simple flag keywords
+  @discardableResult func distinct() -> SqlStmt { data.distinct = true; return self }
+  @discardableResult func ignore() -> SqlStmt { data.ignore = true; return self }
+  @discardableResult func replace() -> SqlStmt { data.replace = true; return self }
+  @discardableResult func straight_join() -> SqlStmt { data.straight_join = true; return self }
+  @discardableResult func with_rollup() -> SqlStmt { data.with_rollup = true; return self }
+
+  ////// simple single value keywords
+  @discardableResult func group_by(_ value: String) -> SqlStmt { data.group_by = value; return self }
+  @discardableResult func into(_ value: String) -> SqlStmt { data.into = value; return self }
+  @discardableResult func limit(_ value: String) -> SqlStmt { data.limit = value; return self }
+  @discardableResult func offset(_ value: String) -> SqlStmt { data.offset = value; return self }
+  @discardableResult func order_by(_ value: String) -> SqlStmt { data.order_by = value; return self }
+  @discardableResult func outfile(_ value: String) -> SqlStmt { data.outfile = value; return self }
+
+  ////// simple multi value keywords
+  @discardableResult func get(_ values: String...) -> SqlStmt { data.gets.append(contentsOf: values); return self }
+  @discardableResult func having(_ values: String...) -> SqlStmt { data.havings.append(contentsOf: values); return self }
+  // the backticks around where are necessary because it is a keyword
+  @discardableResult func `where`(_ values: String...) -> SqlStmt { data.wheres.append(contentsOf: values); return self }
 }
