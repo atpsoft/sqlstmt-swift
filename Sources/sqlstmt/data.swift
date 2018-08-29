@@ -15,7 +15,7 @@ struct SqlJoin {
 
 
 struct SqlData {
-  var stmt_type: StmtType?
+  var stmt_type: StmtType? = nil
   var tables: [SqlTable] = []
   var table_ids: Set<String> = []
   var joins: [SqlJoin] = []
@@ -40,8 +40,4 @@ struct SqlData {
   var gets: [String] = []
   var havings: [String] = []
   var wheres: [String] = []
-
-  init() {
-    self.stmt_type = nil
-  }
 }
