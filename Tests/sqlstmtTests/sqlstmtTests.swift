@@ -2,6 +2,13 @@ import XCTest
 @testable import sqlstmt
 
 final class sqlstmtTests: XCTestCase {
+  func testToSql() {
+    XCTAssertEqual("'blah'", "blah".toSql())
+    XCTAssertEqual("'b\\\\lah'", "b\\lah".toSql())
+    XCTAssertEqual("'b\\'lah'", "b'lah".toSql())
+    XCTAssertEqual("'b\\\"lah'", "b\"lah".toSql())
+  }
+
   func testSelect() throws {
     var sqlt = SqlStmt()
     XCTAssertThrowsError(try sqlt.to_s())
@@ -22,6 +29,7 @@ final class sqlstmtTests: XCTestCase {
   }
 
   static var allTests = [
+    ("testToSql", testToSql),
     ("testSelect", testSelect),
   ]
 }
