@@ -15,3 +15,11 @@ extension String: SafelySql {
   }
 }
 
+extension Bool: SafelySql {
+  func toSql() -> String {
+    if self == true {
+      return "1"
+    }
+    return "0"
+  }
+}

@@ -7,6 +7,9 @@ final class sqlstmtTests: XCTestCase {
     XCTAssertEqual("'b\\\\lah'", "b\\lah".toSql())
     XCTAssertEqual("'b\\'lah'", "b'lah".toSql())
     XCTAssertEqual("'b\\\"lah'", "b\"lah".toSql())
+
+    XCTAssertEqual("1", true.toSql())
+    XCTAssertEqual("0", false.toSql())
   }
 
   func testSelect() throws {
