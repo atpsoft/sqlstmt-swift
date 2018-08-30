@@ -27,7 +27,7 @@ final class sqlstmtTests: XCTestCase {
     sqlt.join("other o", "s.blah_id = o.blah_id")
     XCTAssertEqual("SELECT blah FROM source s JOIN other o ON s.blah_id = o.blah_id", try sqlt.to_s())
 
-    // but trying to change the statement type should
+    // fail if we've already set the statement type to select
     XCTAssertThrowsError(try sqlt.update())
   }
 
