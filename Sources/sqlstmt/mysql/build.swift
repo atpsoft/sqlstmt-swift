@@ -26,12 +26,45 @@ class MysqlBuilder {
     if data.stmt_type == nil {
       throw StmtError.runtimeError("must pick a statement type")
     }
-    var parts: [String] = []
-    parts.append(data.stmt_type!.rawValue.uppercased())
+    switch data.stmt_type! {
+      case .select:
+        return build_select()
+      case .update:
+        return build_update()
+      case .insert:
+        return build_insert()
+      case .delete:
+        return build_delete()
+    }
+  }
+
+  func build_select() -> String {
+    var parts: [String] = ["SELECT"]
     parts.append(data.gets.joined(separator: ","))
     parts.append("FROM")
     parts.append(build_table_list())
     parts.append(build_join_clause())
+    return combine_parts(parts)
+  }
+
+  func build_update() -> String {
+    var parts: [String] = []
+    return combine_parts(parts)
+  }
+
+  func build_insert() -> String {
+    var parts: [String] = []
+    if data.replace {
+      parts.append("REPLACE")
+    } else {
+      parts.append("INSERT")
+    }
+    if data.ignore { parts.append("IGNORE") }
+    return combine_parts(parts)
+  }
+
+  func build_delete() -> String {
+    var parts: [String] = []
     return combine_parts(parts)
   }
 
