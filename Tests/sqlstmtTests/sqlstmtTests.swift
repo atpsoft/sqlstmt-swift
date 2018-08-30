@@ -20,7 +20,7 @@ final class sqlstmtTests: XCTestCase {
     XCTAssertEqual(["source"], sqlt.data.table_ids)
 
     sqlt = SqlStmt()
-    try sqlt.select().table("source s").get("blah")
+    try sqlt.select().table("source s").get("blah").no_where()
     XCTAssertEqual(["source", "s"], sqlt.data.table_ids)
     XCTAssertEqual("SELECT blah FROM source s", try sqlt.to_s())
 

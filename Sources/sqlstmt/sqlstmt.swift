@@ -95,6 +95,10 @@ class SqlStmt {
 
   /////// convert it to a string
   func to_s() throws -> String {
+    let checker = MysqlChecker(data)
+    // raises an exception if it finds a problem
+    try checker.run()
+
     let builder = MysqlBuilder(data)
     return try builder.build()
   }
