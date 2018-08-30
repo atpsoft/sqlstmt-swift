@@ -39,16 +39,24 @@ class MysqlBuilder {
   }
 
   func build_select() -> String {
-    var parts: [String] = ["SELECT"]
-    parts.append(data.gets.joined(separator: ","))
-    parts.append("FROM")
-    parts.append(build_table_list())
-    parts.append(build_join_clause())
+    var parts: [String] = []
+    parts.append(contentsOf: shared_select(data.gets))
+    if !data.outfile.isEmpty {
+      parts.append("INTO OUTFILE \(data.outfile)")
+    }
     return combine_parts(parts)
   }
 
   func build_update() -> String {
-    var parts: [String] = []
+    let parts: [String] = [
+      "UPDATE",
+      build_table_list(),
+      build_join_clause(),
+      "SET",
+      build_set_clause(),
+      build_where_clause(),
+      simple_clause("LIMIT", data.limit),
+    ]
     return combine_parts(parts)
   }
 
@@ -60,12 +68,32 @@ class MysqlBuilder {
       parts.append("INSERT")
     }
     if data.ignore { parts.append("IGNORE") }
+
+    parts.append("INTO \(data.into)")
+    if !data.set_fields.isEmpty {
+      let field_list = data.set_fields.joined(separator: ",")
+      parts.append("(\(field_list))")
+    }
+    parts.append(contentsOf: shared_select(data.set_values))
     return combine_parts(parts)
   }
 
   func build_delete() -> String {
-    var parts: [String] = []
+    var parts: [String] = ["DELETE"]
+    if !data.tables_to_delete.isEmpty {
+      parts.append(data.tables_to_delete.joined(separator: ","))
+    }
+    parts.append(build_from_clause())
     return combine_parts(parts)
+  }
+
+  func shared_select(_ fields: [String]) -> [String] {
+    var parts: [String] = ["SELECT"]
+    parts.append(fields.joined(separator: ","))
+    parts.append("FROM")
+    parts.append(build_table_list())
+    parts.append(build_join_clause())
+    return parts
   }
 
   func join_to_str(_ join: SqlJoin) -> String {
@@ -75,5 +103,48 @@ class MysqlBuilder {
   func build_join_clause() -> String {
     let join_strs = data.joins.map {join in join_to_str(join)}
     return join_strs.joined(separator: " ")
+  }
+
+  func simple_clause(_ keywords: String, _ value: String) -> String {
+    if value.isEmpty {
+      return ""
+    }
+    return "\(keywords) \(value)"
+  }
+
+  func build_where_clause() -> String {
+    if data.wheres.isEmpty {
+      return ""
+    }
+    let exprs = data.wheres.joined(separator: " AND ")
+    return "WHERE \(exprs)"
+  }
+
+  func build_from_clause() -> String {
+    var parts = ["FROM"]
+    parts.append(build_table_list())
+    parts.append(build_join_clause())
+    parts.append(build_where_clause())
+    parts.append(simple_clause("GROUP BY", data.group_by))
+    if data.with_rollup {
+      parts.append("WITH ROLLUP")
+    }
+    if !data.havings.isEmpty {
+      let exprs = data.havings.joined(separator: " AND ")
+      parts.append("HAVING \(exprs)")
+    }
+    parts.append(simple_clause("ORDER BY", data.order_by))
+    parts.append(simple_clause("LIMIT", data.limit))
+    return combine_parts(parts)
+  }
+
+  func build_set_clause() -> String {
+    var set_exprs: [String] = []
+    for index in 0...(data.set_fields.count - 1) {
+      let field = data.set_fields[index]
+      let value = data.set_values[index]
+      set_exprs.append("\(field) = \(value)")
+    }
+    return set_exprs.joined(separator: ", ")
   }
 }
