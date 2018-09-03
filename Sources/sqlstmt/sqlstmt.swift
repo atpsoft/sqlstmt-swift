@@ -60,6 +60,11 @@ class SqlStmt {
 
   ////// where
 
+  @discardableResult func require_where() -> SqlStmt {
+    data.where_behavior = .require
+    return self
+  }
+
   @discardableResult func no_where() -> SqlStmt {
     data.where_behavior = .exclude
     return self

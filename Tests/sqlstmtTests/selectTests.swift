@@ -19,10 +19,13 @@ final class selectTests: XCTestCase {
     sqlt.no_where()
     XCTAssertEqual("SELECT blah FROM target", try sqlt.to_s())
 
-    sqlt.where("frog = 1")
+    sqlt.require_where()
     XCTAssertThrowsError(try sqlt.to_s())
 
     sqlt.optional_where()
+    XCTAssertEqual("SELECT blah FROM target", try sqlt.to_s())
+
+    sqlt.where("frog = 1")
     XCTAssertEqual("SELECT blah FROM target WHERE frog = 1", try sqlt.to_s())
 
     sqlt.join("other o", "target.id = o.id")
