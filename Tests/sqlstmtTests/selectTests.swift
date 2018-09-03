@@ -34,7 +34,7 @@ final class selectTests: XCTestCase {
     XCTAssertEqual("SELECT blah FROM target JOIN other o ON target.id = o.id WHERE frog = 1", try sqlt.to_sql())
   }
 
-  func testMisc() throws {
+  func testSimpleWithSmallVariations() throws {
     let tmpl = SqlStmt()
     try tmpl.select().table("target t").get("blah").no_where()
     XCTAssertEqual(["target", "t"], tmpl.data.table_ids)
@@ -58,6 +58,6 @@ final class selectTests: XCTestCase {
 
   static var allTests = [
     ("testGradually", testGradually),
-    ("testMisc", testMisc),
+    ("testSimpleWithSmallVariations", testSimpleWithSmallVariations),
   ]
 }
