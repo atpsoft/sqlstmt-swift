@@ -87,6 +87,13 @@ final class selectTests: XCTestCase {
     XCTAssert(sqlt.includes_table("o"))
   }
 
+  func testDuplicateJoins() throws {
+    let sqlt = try SqlStmt().select().table("source s").get("frog").no_where()
+    for _ in 1...4 { sqlt.join("other o", "s.blah_id = o.blah_id") }
+    XCTAssertEqual("SELECT frog FROM source s JOIN other o ON s.blah_id = o.blah_id", try sqlt.to_sql())
+    XCTAssertEqual("other o", sqlt.data.joins[0].table.str)
+  }
+
   static var allTests = [
     ("testGradually", testGradually),
     ("testSimpleWithSmallVariations", testSimpleWithSmallVariations),

@@ -1,3 +1,5 @@
+import Foundation
+
 class MysqlBuilder {
   let data: SqlData
 
@@ -106,7 +108,8 @@ class MysqlBuilder {
 
   func build_join_clause() -> String {
     let join_strs = data.joins.map {join in join_to_str(join)}
-    return join_strs.joined(separator: " ")
+    let uniqueOrdered = NSOrderedSet(array: join_strs).array.map {$0 as! String}
+    return uniqueOrdered.joined(separator: " ")
   }
 
   func simple_clause(_ keywords: String, _ value: String) -> String {
