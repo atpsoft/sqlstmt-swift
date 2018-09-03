@@ -5,8 +5,9 @@ final class selectTests: XCTestCase {
   func testGradually() throws {
     let sqlt = SqlStmt()
 
-    try sqlt.select()
-    try sqlt.type(.select)
+    // keep these chained together, so we have at least one test of the return value of all the method calls
+    // in swift in particular, it is important because of class vs. struct; see SqlStmt definition for more info
+    try sqlt.select().type(.select)
     XCTAssertThrowsError(try sqlt.update())
 
     sqlt.table("target")
