@@ -44,6 +44,10 @@ final class selectTests: XCTestCase {
     XCTAssertEqual("SELECT DISTINCT blah FROM target t", try sqlt.to_sql())
 
     sqlt = tmpl.copy() as! SqlStmt
+    sqlt.join("other o", "t.blah_id = o.blah_id", "t.blee_id = o.blee_id")
+    XCTAssertEqual("SELECT blah FROM target t JOIN other o ON t.blah_id = o.blah_id AND t.blee_id = o.blee_id", try sqlt.to_sql())
+
+    sqlt = tmpl.copy() as! SqlStmt
     sqlt.left_join("other o", "t.blah_id = o.blah_id")
     XCTAssertEqual("SELECT blah FROM target t LEFT JOIN other o ON t.blah_id = o.blah_id", try sqlt.to_sql())
 
@@ -54,6 +58,12 @@ final class selectTests: XCTestCase {
     sqlt = tmpl.copy() as! SqlStmt
     sqlt.having("blah > 0")
     XCTAssertEqual("SELECT blah FROM target t HAVING blah > 0", try sqlt.to_sql())
+
+    sqlt = tmpl.copy() as! SqlStmt
+    sqlt.group_by("blah")
+    XCTAssertEqual("SELECT blah FROM target t GROUP BY blah", try sqlt.to_sql())
+    sqlt.with_rollup()
+    XCTAssertEqual("SELECT blah FROM target t GROUP BY blah WITH ROLLUP", try sqlt.to_sql())
   }
 
   static var allTests = [
