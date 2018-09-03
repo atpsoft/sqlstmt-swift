@@ -27,7 +27,7 @@ class SqlStmt {
   }
 
   @discardableResult func type(_ stmt_type: StmtType) throws -> SqlStmt {
-    if data.stmt_type != nil {
+    if (data.stmt_type != nil) && (stmt_type != data.stmt_type!) {
       throw StmtError.runtimeError("statement type already set to \(data.stmt_type!)")
     }
     data.stmt_type = stmt_type

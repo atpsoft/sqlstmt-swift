@@ -89,10 +89,14 @@ class MysqlBuilder {
 
   func shared_select(_ fields: [String]) -> [String] {
     var parts: [String] = ["SELECT"]
+    if data.straight_join {
+      parts.append("STRAIGHT_JOIN")
+    }
+    if data.distinct {
+      parts.append("DISTINCT")
+    }
     parts.append(fields.joined(separator: ","))
-    parts.append("FROM")
-    parts.append(build_table_list())
-    parts.append(build_join_clause())
+    parts.append(build_from_clause())
     return parts
   }
 
