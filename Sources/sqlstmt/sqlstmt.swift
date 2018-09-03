@@ -1,10 +1,25 @@
+import Foundation
+
 // it appears to use the method chaining syntax we want
 // we must use class instead of struct because class is a reference type
 // and so can make changes, while still returning self without the mutating keyword
 // when it was a struct and we tried to chain, we go this error:
 // "cannot use mutating member on immutable value: function call returns immutable value"
-class SqlStmt {
-  var data: SqlData = SqlData()
+class SqlStmt: NSCopying {
+  var data: SqlData
+
+  init() {
+    self.data = SqlData()
+  }
+
+  init(_ data: SqlData) {
+    self.data = data
+  }
+
+  func copy(with: NSZone? = nil) -> Any {
+    let retval = SqlStmt(self.data)
+    return retval
+  }
 
   ////// pick statement type
 
