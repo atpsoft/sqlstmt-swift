@@ -114,7 +114,7 @@ class SqlStmt: NSCopying {
   }
 
   /////// convert it to a string
-  func to_s() throws -> String {
+  func to_sql() throws -> String {
     let checker = MysqlChecker(data)
     // raises an exception if it finds a problem
     try checker.run()
