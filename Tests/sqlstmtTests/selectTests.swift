@@ -66,8 +66,30 @@ final class selectTests: XCTestCase {
     XCTAssertEqual("SELECT blah FROM target t GROUP BY blah WITH ROLLUP", try sqlt.to_sql())
   }
 
+  func testTables() throws {
+    var sqlt = try SqlStmt().select().table("target t", use_index: "blee").no_where().get("t.blah")
+    XCTAssertEqual("SELECT t.blah FROM target t USE INDEX (blee)", try sqlt.to_sql())
+
+    sqlt = try SqlStmt().select().table("target")
+    XCTAssert(sqlt.includes_table("target"))
+    XCTAssert(!sqlt.includes_table("blah"))
+
+    sqlt = try SqlStmt().select().table("target t")
+    XCTAssert(sqlt.includes_table("target"))
+    XCTAssert(sqlt.includes_table("t"))
+
+    sqlt = try SqlStmt().select().table("target AS t")
+    XCTAssert(sqlt.includes_table("target"))
+    XCTAssert(sqlt.includes_table("t"))
+
+    sqlt.join("other o", "t.blah_id = o.blah_id")
+    XCTAssert(sqlt.includes_table("other"))
+    XCTAssert(sqlt.includes_table("o"))
+  }
+
   static var allTests = [
     ("testGradually", testGradually),
     ("testSimpleWithSmallVariations", testSimpleWithSmallVariations),
+    ("testTables", testTables),
   ]
 }

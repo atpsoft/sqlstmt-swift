@@ -73,6 +73,10 @@ class SqlStmt: NSCopying {
     return self
   }
 
+  func includes_table(_ table_to_find: String) -> Bool {
+    return data.table_ids.contains(table_to_find)
+  }
+
   ////// where
 
   @discardableResult func require_where() -> SqlStmt {
